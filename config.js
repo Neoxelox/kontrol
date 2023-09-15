@@ -3,13 +3,14 @@ module.exports = {
   jobs: {
     kontrol: {
       cron: '*/30 * * * * *',
+      delay: 5000,
       url: 'http://localhost:8080/healthcheck',
       method: 'GET',
       headers: {},
       searchParams: {},
       retry: 1,
       timeout: 10000,
-      notify: (error) => ({
+      notify: (state, error) => ({
          attachments: [{
           color: (error ? 'danger' : 'good'),
           mrkdwn_in: ['text'],

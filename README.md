@@ -23,8 +23,8 @@ Most of the configuration options come from [got](https://github.com/sindresorhu
 * `docker`: the options used to initialize dockerode
 * `jobs`: a map of healthcheck and notification/heal tasks to be performed, for each task identified by its key
   * `cron`: the [CRON pattern](https://github.com/kelektiv/node-cron) to schedule it
-  * `delay`: the delay in seconds before scheduling the task
-  * `notify`: optional function with the `error` object as input when the healthcheck has failed or none when it is back to healthy after a failure (returns the Slack message payload to be sent for notification)
+  * `delay`: the delay in milliseconds before scheduling the task
+  * `notify`: optional function with the `state` (`UNHEALTHY`/`HEALED`/`NOT_HEALED`) and `error` (optional) object as input (returns the Slack message payload to be sent for notification)
   * `heal`: optional function with the `docker` object (i.e. dockerode instance) and `_` (lodash instance) as input and performing Docker commands to heal the infrastructure
   * all other options are sent to got instance for the healthcheck request
 
@@ -32,15 +32,18 @@ Here are the environment variables you can use to customize the behaviour:
 
 | Variable  | Description | Defaults |
 |-----------| ------------| ------------|
-| `CONFIG_FILEPATH` | your configuration file path | `config.js` |
-| `PORT` | the server port | `8080` |
-| `SLACK_WEBHOOK_URL` | your Slack webhook URL |  |
+| `KONTROL_CONFIG_FILEPATH` | your configuration file path | `config.js` |
+| `KONTROL_PORT` | the server port | `8080` |
+| `KONTROL_SLACK_WEBHOOK_URL` | your Slack webhook URL |  |
+| `KONTROL_SLACK_WEBHOOK_CHANNEL` | your Slack webhook channel | |
+| `KONTROL_SLACK_WEBHOOK_USERNAME` | your Slack webhook username | `Kontrol` |
+| `KONTROL_SLACK_WEBHOOK_ICON_URL` | your Slack webhook icon url| `https://avatars.githubusercontent.com/u/29858840?s=200&v=4` |
 
 ### Example
 
 The default [`config.js`](./config.js) is a great example to start from. It basically checks the kontrol container itself and restart it on failure, like would Docker do. When under test mode, the kontrol container will randomly fail with a `500` status code, so that the container will restart as long as you don't kill it manually. To build and launch the example execute the following commands:
 ```
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx
+KONTROL_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx
 docker-compose build
 docker-compose up
 ```
